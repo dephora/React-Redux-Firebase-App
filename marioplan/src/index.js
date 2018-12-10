@@ -13,11 +13,13 @@ import fbConfig from './config/fbConfig'
 
 const store = createStore(rootReducer,
   compose(
-    applyMiddleware(thunk.withExtraArgument({getFirebase, getFirestore})),
-    reactReduxFirebase(fbConfig), // redux binding for firebase
-    reduxFirestore(fbConfig) // redux bindings for firestore
+    applyMiddleware(thunk.withExtraArgument({ getFirebase, getFirestore })),
+    reduxFirestore(fbConfig), // redux bindings for firestore
+    reactReduxFirebase(fbConfig, { attachAuthIsReady: true }) // redux binding for firebase
   )
 );
 
-ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('root'));
-registerServiceWorker();
+store.firebaseAuthIsReady.then(() => {
+  ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('root'));
+  registerServiceWorker();
+})
